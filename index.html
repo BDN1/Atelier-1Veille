@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Représentation Graphique</title>
+</head>
+
+<body>
+    <div id="graphContainer" style="border:1px solid black; width:800px; height:800px"></div>
+    <script defer>
+        const svgns = "http://www.w3.org/2000/svg";
+        let viewPortMaxUnitX = 1000;
+        let viewPortMaxUnitY = 1000;
+        let viewport = null;
+        let NB_MOIS = 12 
+        let mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
+        let ventes = [6500, 5550, 4200, 4525, 2500, 1500, 500, 1000, 1750, 2300, 3700, 3500];
+        init_UI();
+        function init_UI() {
+            insertViewPort("graphContainer");
+            demoShapes();
+        }
+        function insertViewPort(containerId) {
+            viewport = document.createElementNS(svgns, "svg");
+            viewport.setAttribute("id", "viewport");
+            viewport.setAttribute("viewBox", "0 0 " + viewPortMaxUnitX + " " + viewPortMaxUnitY);
+            document.getElementById(containerId).appendChild(viewport);
+        }
+        function demoShapes(){
+
+            viewport.appendChild(line(100, 900, 900, 900, "black", 2))
+            viewport.appendChild(text(450, 25,"Ventes 2022", 0, 1.5, "black"))
+            
+            let VENTE_PLUS_GROS = Math.max(...ventes);
+            let GROSSEUR_TABLEAU = 800
+            let DistanceEntreBaton = GROSSEUR_TABLEAU / (VENTE_PLUS_GROS / 100)
+            let Y = 900
+            let Largeur = ( GROSSEUR_TABLEAU / NB_MOIS ) -8
+            for (let i = 0; i < (VENTE_PLUS_GROS / 100); i++)
+            {
+                if(i % 10 == 0){
+                    viewport.appendChild(line(100, Y, 900, Y,'black', 2))
+                    viewport.appendChild(text(25, Y + 5,"$ " + (i * 100), 0, 1.5, "black"))
+                }
+                else 
+                    viewport.appendChild(line(100, Y, 900, Y, 'lightgrey',1))
+                Y = Y - DistanceEntreBaton
+            }
+            x = 32
+                for(let i = 0;i<mois.length + 1;i++){
+                    if(ventes[i] < 1000)
+                    color = "red";
+                else if(ventes[i] > 1000 && ventes[i] < 3000)
+                    color = "orange";
+                else if(ventes[i] > 3000 && ventes[i] < 4500)
+                    color = "yellow";
+                else if(ventes[i] > 4500)
+                    color = "green";
+                x = x + Largeur + 10;
+                Hauteur = (800 * ventes[i] / VENTE_PLUS_GROS)
+                viewport.appendChild(rect(x,(900 - Hauteur), 50, (Hauteur), color, "black", 1))
+                viewport.appendChild(text(x + 5,920,mois[i],20,1.5,"black"))
+                viewport.appendChild(text(x,(890 - Hauteur),"$ " + ventes[i],"black"))
+                }
+        }
+
+        function rect(x, y, width, height, fill = "white", stroke = "black", strokeWidth = 1) {
+            let rect = document.createElementNS(svgns, "rect");
+            rect.setAttribute("x", x); rect.setAttribute("y", y);
+            rect.setAttribute("width", width); rect.setAttribute("height", height);
+            rect.setAttribute("fill", fill); rect.setAttribute("stroke", stroke);
+            rect.setAttribute("stroke-width", strokeWidth);
+            return rect;
+        }
+
+
+        function text(x, y, content, angle = 0, size = "1", fill = "black") {
+            let text = document.createElementNS(svgns, "text");
+            text.setAttribute("x", x); text.setAttribute("y", y);
+            text.setAttribute("transform", `rotate(${angle},${x},${y})`);
+            text.setAttribute("font-size", size + "em");
+            text.setAttribute("fill", fill);
+            text.innerHTML = content;
+            return text;
+
+        }
+        function line(x1, y1, x2, y2, stroke = "black", strokeWidth = 1) {
+            let line = document.createElementNS(svgns, "line");
+            line.setAttribute("x1", x1); line.setAttribute("y1", y1);
+            line.setAttribute("x2", x2); line.setAttribute("y2", y2);
+            line.setAttribute("stroke", stroke);
+            line.setAttribute("stroke-width", strokeWidth);
+            return line;
+        }
+    </script>
+    
+</body>
+
+</html>
